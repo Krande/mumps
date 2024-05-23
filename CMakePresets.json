@@ -30,15 +30,20 @@
         "LIBRARY_PREFIX": "$env{PREFIX}/Library"
       },
       "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_PREFIX_PATH": "$env{LIBRARY_PREFIX}",
         "CMAKE_INSTALL_PREFIX": "$env{LIBRARY_PREFIX}",
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_Fortran_COMPILER": "ifx",
         "MUMPS_UPSTREAM_VERSION": "5.6.2",
-        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_SHARED_LIBS": "OFF",
         "LAPACK_VENDOR": "MKL",
         "MKL_DIR": "$env{LIBRARY_PREFIX}/lib",
         "intsize64": "ON",
         "gemmt": "OFF",
-        "WITH_MPI": "OFF"
+        "metis": "ON",
+        "scotch": "ON",
+        "parallel": "OFF"
       }
     }
   ],

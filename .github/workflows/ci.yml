@@ -7,6 +7,7 @@ env:
   CTEST_PARALLEL_LEVEL: 0
   CMAKE_INSTALL_PREFIX: ~/libs
   CMAKE_PREFIX_PATH: ~/libs
+  CMAKE_GENERATOR: Ninja
 
 on:
   push:
@@ -17,6 +18,7 @@ on:
       - "**.f90"
       - "**.F90"
       - "**.cmake"
+      - "**.cmake.in"
       - "**.txt"
       - ".github/workflows/ci.yml"
       - "!scripts/*"
@@ -30,27 +32,39 @@ jobs:
       matrix:
         scotch: [false]
         metis: [false]
+        parallel: [true]
         lapack_vendor: [""]
-        img: [ {os: ubuntu-latest, cmd: sudo apt update && sudo apt install --no-install-recommends libopenmpi-dev openmpi-bin},
-               {os: macos-latest, cmd: brew install open-mpi}
-        ]
+        os: [ubuntu-24.04, macos-latest]
         include:
           - scotch: true
-            img: {os: ubuntu-latest, cmd: sudo apt update && sudo apt install --no-install-recommends libopenmpi-dev openmpi-bin}
+            os: ubuntu-24.04
           - metis: true
-            img: {os: ubuntu-latest, cmd: sudo apt update && sudo apt install --no-install-recommends libopenmpi-dev openmpi-bin}
+            os: ubuntu-24.04
           - lapack_vendor: "OpenBLAS"
-            img: {os: ubuntu-latest, cmd: sudo apt update && sudo apt install --no-install-recommends libopenmpi-dev openmpi-bin libopenblas-dev}
+            os: ubuntu-24.04
+          - parallel: false
+            os: ubuntu-24.04
 
-    runs-on: ${{ matrix.img.os }}
+    runs-on: ${{ matrix.os }}
 
     env:
-      FC: gfortran-12
+      FC: gfortran-13
 
     steps:
 
-    - name: Install prereqs
-      run: ${{ matrix.img.cmd }}
+    - name: Install prereqs (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt update
+        sudo apt install --no-install-recommends libopenmpi-dev openmpi-bin liblapack-dev libscalapack-openmpi-dev ninja-build
+
+    - name: Install prereqs (macOS)
+      if: runner.os == 'macOS'
+      run: brew install open-mpi ninja scalapack
+
+    - name: Install OpenBLAS (Linux)
+      if: ${{ matrix.lapack_vendor == 'OpenBLAS' }}
+      run: sudo apt install --no-install-recommends libopenblas-dev
 
     - uses: actions/checkout@v4
 
@@ -66,6 +80,7 @@ jobs:
       run: >-
         cmake
         --preset default
+        -Dparallel:BOOL=${{ matrix.parallel }}
         -Dscotch:BOOL=${{ matrix.scotch }}
         -Dmetis:BOOL=${{ matrix.metis }}
         -DLAPACK_VENDOR=${{ matrix.lapack_vendor }}

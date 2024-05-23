@@ -5,7 +5,5 @@ dependencies:
   - libscotch=7.0.4
   - metis=5.1.0
   - mkl-devel=2024.0
-  - libblas
-  - liblapack
-  - msmpi
-  - m2-patch
+  - libblas=3.9.0=*mkl*
+  - liblapack=3.9.0=*mkl*
