@@ -1,58 +1,86 @@
 {
   "version": 6,
-
-"configurePresets": [
-{
-  "name": "default",
-  "binaryDir": "${sourceDir}/build",
-  "cacheVariables": {
-    "BUILD_SINGLE": false,
-    "BUILD_DOUBLE": true,
-    "BUILD_COMPLEX": false,
-    "BUILD_COMPLEX16": false,
-    "CMAKE_BUILD_TYPE": "Release"
-  }
-}
-],
-"buildPresets": [
-  {
-    "name": "default",
-    "configurePreset": "default"
-  }
-],
-"testPresets": [
-{
-  "name": "default",
-  "configurePreset": "default",
-  "output": {
-    "outputOnFailure": true,
-    "verbosity": "verbose"
-  },
-  "execution": {
-    "noTestsAction": "error",
-    "scheduleRandom": true,
-    "stopOnFailure": false,
-    "timeout": 60
-  }
-}
-],
-"workflowPresets": [
-  {
-    "name": "default",
-    "steps": [
-      {
-        "type": "configure",
-        "name": "default"
-      },
-      {
-        "type": "build",
-        "name": "default"
-      },
-      {
-        "type": "test",
-        "name": "default"
+  "include": [
+    ".env.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "default",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "BUILD_SINGLE": false,
+        "BUILD_DOUBLE": true,
+        "BUILD_COMPLEX": false,
+        "BUILD_COMPLEX16": false,
+        "CMAKE_BUILD_TYPE": "Release"
       }
-    ]
-  }
-]
+    },
+    {
+      "name": "msvc-ifx",
+      "description": "MSVC with Intel Fortran",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "inherits": ["env-vars"],
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio (MSVC) with Intel Fortran"
+        }
+      },
+      "environment": {
+        "LIBRARY_PREFIX": "$env{PREFIX}/Library"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "$env{LIBRARY_PREFIX}",
+        "CMAKE_INSTALL_PREFIX": "$env{LIBRARY_PREFIX}",
+        "MUMPS_UPSTREAM_VERSION": "5.6.2",
+        "CMAKE_BUILD_TYPE": "Release",
+        "LAPACK_VENDOR": "MKL",
+        "MKL_DIR": "$env{LIBRARY_PREFIX}/lib",
+        "intsize64": "ON",
+        "gemmt": "OFF",
+        "WITH_MPI": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default",
+      "output": {
+        "outputOnFailure": true,
+        "verbosity": "verbose"
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "scheduleRandom": true,
+        "stopOnFailure": false,
+        "timeout": 60
+      }
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "default",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "default"
+        },
+        {
+          "type": "build",
+          "name": "default"
+        },
+        {
+          "type": "test",
+          "name": "default"
+        }
+      ]
+    }
+  ]
 }

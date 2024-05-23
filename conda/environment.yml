@@ -4,3 +4,8 @@ dependencies:
   - vswhere
   - libscotch=7.0.4
   - metis=5.1.0
+  - mkl-devel=2024.0
+  - libblas
+  - liblapack
+  - msmpi
+  - m2-patch

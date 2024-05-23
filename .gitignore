@@ -2,3 +2,4 @@ mumps/
 CMakeUserPresets.json
 build*/
 .idea/
+.env.json

@@ -12,12 +12,12 @@ option(${PROJECT_NAME}_BUILD_TESTING "Build tests" ${${PROJECT_NAME}_IS_TOP_LEVE
 option(find_static "Find static libraries for Lapack and Scalapack (default shared then static search)")
 
 if(MUMPS_UPSTREAM_VERSION VERSION_GREATER_EQUAL 5.2)
-  option(gemmt "GEMMT is recommended in User Manual if available" ON)
+  option(gemmt "GEMMT is recommended in User Manual if available" OFF)
 endif()
 
-option(parallel "parallel (use MPI)" ON)
+option(parallel "parallel (use MPI)" OFF)
 
-option(intsize64 "use 64-bit integers in C and Fortran")
+option(intsize64 "use 64-bit integers in C and Fortran" ON)
 
 option(scalapack "Use ScalaPACK to speed up the solution of linear systems" ON)
 if(MUMPS_UPSTREAM_VERSION VERSION_LESS 5.7 AND NOT scalapack)
@@ -26,7 +26,7 @@ endif()
 
 option(scotch "use Scotch orderings")
 
-option(parmetis "use parallel METIS ordering")
+option(parmetis "use parallel METIS ordering" OFF)
 option(metis "use sequential METIS ordering")
 if(parmetis AND NOT parallel)
   message(FATAL_ERROR "parmetis requires parallel=on")
