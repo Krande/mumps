@@ -1,0 +1,6 @@
+name: mumps-deps
+dependencies:
+  - python=3.11.9
+  - vswhere
+  - libscotch=7.0.4
+  - metis=5.1.0
