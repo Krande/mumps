@@ -30,7 +30,8 @@
         "LIBRARY_PREFIX": "$env{PREFIX}/Library",
         "LD_LIBRARY_PATH": "$env{LIBRARY_PREFIX}/lib;$penv{LD_LIBRARY_PATH}",
         "PATH": "$env{LIBRARY_PREFIX}/lib;$penv{PATH}",
-        "LIB": "$env{LIBRARY_PREFIX}/lib;$penv{LIB}"
+        "LIB": "$env{LIBRARY_PREFIX}/lib;$penv{LIB}",
+        "INCLUDE": "$env{LIBRARY_PREFIX}/include;$penv{INCLUDE}"
       },
       "cacheVariables": {
         "BUILD_SINGLE": true,
