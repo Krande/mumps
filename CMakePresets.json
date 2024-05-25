@@ -27,9 +27,16 @@
         }
       },
       "environment": {
-        "LIBRARY_PREFIX": "$env{PREFIX}/Library"
+        "LIBRARY_PREFIX": "$env{PREFIX}/Library",
+        "LD_LIBRARY_PATH": "$env{LIBRARY_PREFIX}/lib;$penv{LD_LIBRARY_PATH}",
+        "PATH": "$env{LIBRARY_PREFIX}/lib;$penv{PATH}",
+        "LIB": "$env{LIBRARY_PREFIX}/lib;$penv{LIB}"
       },
       "cacheVariables": {
+        "BUILD_SINGLE": true,
+        "BUILD_DOUBLE": true,
+        "BUILD_COMPLEX": true,
+        "BUILD_COMPLEX16": true,
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_PREFIX_PATH": "$env{LIBRARY_PREFIX}",
         "CMAKE_INSTALL_PREFIX": "$env{LIBRARY_PREFIX}",
@@ -40,9 +47,10 @@
         "LAPACK_VENDOR": "MKL",
         "MKL_DIR": "$env{LIBRARY_PREFIX}/lib",
         "intsize64": "ON",
-        "gemmt": "OFF",
+        "gemmt": "ON",
         "metis": "ON",
         "scotch": "ON",
+        "openmp": "OFF",
         "parallel": "OFF"
       }
     }
