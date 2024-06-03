@@ -126,6 +126,17 @@ endif()
 
 message(VERBOSE "MUMPS ${MUMPS_UPSTREAM_VERSION} source directory: ${mumps_SOURCE_DIR}")
 
+# Apply patch file from var MUMPS_PATCH_FILE using a work directory MUMPS_PATCH_DIR
+if(DEFINED MUMPS_PATCH_FILE)
+  if(DEFINED MUMPS_PATCH_DIR)
+    set(patch_dir ${MUMPS_PATCH_DIR})
+  else()
+    set(patch_dir ${mumps_SOURCE_DIR})
+  endif()
+  message(STATUS "Applying patch ${MUMPS_PATCH_FILE} in $patch_dir")
+  execute_process(COMMAND ${Patch_EXECUTABLE} -p1 -i ${MUMPS_PATCH_FILE} WORKING_DIRECTORY ${patch_dir})
+endif()
+
 # --- MUMPS build
 
 # --- mpiseq (No MPI)
