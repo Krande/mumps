@@ -114,17 +114,28 @@ include(FetchContent)
 set(url "https://mumps-solver.org/MUMPS_${MUMPS_UPSTREAM_VERSION}.tar.gz")
 
 set(FETCHCONTENT_QUIET no)
-
-FetchContent_Populate(${PROJECT_NAME}
-SOURCE_DIR ${PROJECT_SOURCE_DIR}/mumps/${MUMPS_UPSTREAM_VERSION}
-URL ${url}
-TLS_VERIFY ${CMAKE_TLS_VERIFY}
-)
+option(MUMPS_USE_CUSTOM_SOURCE_DIR "Use custom source directory" OFF)
+if (MUMPS_USE_CUSTOM_SOURCE_DIR)
+ if (not DEFINED CUSTOM_SOURCE_DIR)
+   message(FATAL_ERROR "CUSTOM_SOURCE_DIR variable must be defined")
+ endif ()
+  set(mumps_SOURCE_DIR ${CUSTOM_SOURCE_DIR})
+else ()
+  FetchContent_Populate(${PROJECT_NAME}
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/mumps/${MUMPS_UPSTREAM_VERSION}
+  URL ${url}
+  TLS_VERIFY ${CMAKE_TLS_VERIFY}
+  )
+endif ()
 
 message(VERBOSE "MUMPS ${MUMPS_UPSTREAM_VERSION} source directory: ${mumps_SOURCE_DIR}")
 
 # Apply patch file from var MUMPS_PATCH_FILE using a work directory MUMPS_PATCH_DIR
-if(DEFINED MUMPS_PATCH_FILE)
+option(MUMPS_APPLY_PATCH_FILE "Apply patch file" OFF)
+if(MUMPS_APPLY_PATCH_FILE )
+  if (NOT DEFINED MUMPS_PATCH_FILE)
+    message(FATAL_ERROR "Applying patch needs MUMPS_PATCH_FILE variable to be defined")
+  endif ()
   if(DEFINED MUMPS_PATCH_DIR)
     set(patch_dir ${MUMPS_PATCH_DIR})
   else()
@@ -144,8 +155,6 @@ if(DEFINED MUMPS_PATCH_FILE)
     # add a file "is_patched" to the source directory to indicate that the patch has been applied
     file(WRITE ${patch_dir}/is_patched "")
   endif()
-else ()
-    message(STATUS "No patch file specified")
 endif()
 
 # --- MUMPS build

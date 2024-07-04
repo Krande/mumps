@@ -16,7 +16,7 @@
         "LIBRARY_PREFIX": "$env{PREFIX}/Library"
       },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_GENERATOR_PLATFORM": "",
         "CMAKE_GENERATOR_TOOLSET": "",
         "CMAKE_PREFIX_PATH": "$env{PREFIX};$env{LIBRARY_PREFIX};$env{LIBRARY_PREFIX}/include;$env{LIBRARY_PREFIX}/lib;$env{LIBRARY_PREFIX}/bin",
@@ -52,8 +52,12 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "cl.exe",
         "CMAKE_Fortran_COMPILER": "ifx.exe",
-        "CMAKE_Fortran_FLAGS": "$env{CMAKE_Fortran_FLAGS} /nologo /4I8 /4L132 /assume:byterecl,aligned_dummy_args,dummy_aliases,writeable_strings",
-        "CMAKE_EXE_LINKER_FLAGS": "/NODEFAULTLIB:MSVCRT"
+        "CMAKE_Fortran_FLAGS": "$env{CMAKE_Fortran_FLAGS} /nologo /4I8 /4L132 /assume:byterecl,aligned_dummy_args,dummy_aliases,writeable_strings -DWORKAROUNDINTELILP64OPENMPLIMITATION",
+        "CMAKE_EXE_LINKER_FLAGS": "/NODEFAULTLIB:MSVCRT",
+        "CMAKE_VERBOSE_MAKEFILE": "ON",
+        "MUMPS_APPLY_PATCH_FILE": "OFF",
+        "MUMPS_USE_CUSTOM_SOURCE_DIR": "OFF",
+        "CUSTOM_SOURCE_DIR": "$env{CUSTOM_SOURCE_DIR}"
       },
       "vendor": {
         "jetbrains.com/clion": {
