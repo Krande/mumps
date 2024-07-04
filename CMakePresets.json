@@ -16,7 +16,7 @@
         "LIBRARY_PREFIX": "$env{PREFIX}/Library"
       },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
         "CMAKE_GENERATOR_PLATFORM": "",
         "CMAKE_GENERATOR_TOOLSET": "",
         "CMAKE_PREFIX_PATH": "$env{PREFIX};$env{LIBRARY_PREFIX};$env{LIBRARY_PREFIX}/include;$env{LIBRARY_PREFIX}/lib;$env{LIBRARY_PREFIX}/bin",
@@ -32,13 +32,13 @@
         "BUILD_COMPLEX16": true,
         "MUMPS_UPSTREAM_VERSION": "5.6.2",
         "BUILD_SHARED_LIBS": "OFF",
-        "LAPACK_VENDOR": "MKL",
+        "LAPACK_VENDOR": "MKL64",
         "MKL_DIR": "$env{LIBRARY_PREFIX}/lib",
         "intsize64": "ON",
         "gemmt": "ON",
         "metis": "ON",
         "scotch": "ON",
-        "openmp": "OFF",
+        "openmp": "ON",
         "parallel": "OFF"
       }
     },
@@ -50,7 +50,9 @@
       ],
       "cacheVariables": {
         "CMAKE_C_COMPILER": "cl.exe",
-        "CMAKE_Fortran_COMPILER": "ifx.exe"
+        "CMAKE_Fortran_COMPILER": "ifx.exe",
+        "CMAKE_Fortran_FLAGS": "$env{CMAKE_Fortran_FLAGS} /nologo /4L132",
+        "CMAKE_EXE_LINKER_FLAGS": "/NODEFAULTLIB:MSVCRT"
       },
       "vendor": {
         "jetbrains.com/clion": {

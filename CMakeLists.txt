@@ -132,6 +132,8 @@ if(DEFINED MUMPS_PATCH_FILE)
   endif()
   message(STATUS "Applying patch ${MUMPS_PATCH_FILE} in $patch_dir")
   execute_process(COMMAND ${Patch_EXECUTABLE} -p1 -i ${MUMPS_PATCH_FILE} WORKING_DIRECTORY ${patch_dir})
+else ()
+    message(STATUS "No patch file specified")
 endif()
 
 # --- MUMPS build
