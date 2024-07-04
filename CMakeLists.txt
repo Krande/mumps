@@ -12,7 +12,7 @@ endif()
 
 project(MUMPS
 LANGUAGES C Fortran
-VERSION 5.7.1.0
+VERSION 5.7.2.0
 DESCRIPTION "Sparse direct parallel solver"
 HOMEPAGE_URL "http://mumps-solver.org/"
 )
@@ -20,11 +20,11 @@ HOMEPAGE_URL "http://mumps-solver.org/"
 enable_testing()
 
 if(NOT MUMPS_UPSTREAM_VERSION)
-  set(MUMPS_UPSTREAM_VERSION 5.7.1)
+  set(MUMPS_UPSTREAM_VERSION 5.7.2)
 endif()
 
 if(MSVC AND BUILD_SHARED_LIBS)
-  message(WARNING "MUMPS: Windows Intel/IntelLLVM compilers with **shared** libraries is not supported and will probably fail.
+  message(WARNING "MUMPS: Windows IntelLLVM compilers with **shared** libraries is not supported and will probably fail.
   Recommend using static libraries, which does work:
   cmake -DBUILD_SHARED_LIBS=off")
 endif()
@@ -43,7 +43,7 @@ find_package(Threads)
 
 if(parallel)
   find_package(MPI COMPONENTS C Fortran REQUIRED)
-  if(NOT DEFINED ENV{MKLROOT} OR NOT scalapack)
+  if(NOT DEFINED ENV{MKLROOT} AND NOT LAPACK_VENDOR MATCHES "^MKL" OR NOT scalapack)
     # oneMKL MKLConfig.cmake must be invoked only once
     include(cmake/lapack.cmake)
   endif()
@@ -105,6 +105,8 @@ DESTINATION cmake
 
 message(STATUS "MUMPS ORDERING_DEFS: ${ORDERING_DEFS}")
 message(STATUS "MUMPS ORDERING_LIBS: ${ORDERING_LIBS}")
+message(STATUS "MUMPS LAPACK_VENDOR: ${LAPACK_VENDOR}")
+message(STATUS "MUMPS SCALAPACK_VENDOR: ${SCALAPACK_VENDOR}")
 
 # --- download MUMPS source
 include(FetchContent)
@@ -113,16 +115,11 @@ set(url "https://mumps-solver.org/MUMPS_${MUMPS_UPSTREAM_VERSION}.tar.gz")
 
 set(FETCHCONTENT_QUIET no)
 
-FetchContent_Declare(${PROJECT_NAME}
+FetchContent_Populate(${PROJECT_NAME}
 SOURCE_DIR ${PROJECT_SOURCE_DIR}/mumps/${MUMPS_UPSTREAM_VERSION}
 URL ${url}
 TLS_VERIFY ${CMAKE_TLS_VERIFY}
 )
-
-FetchContent_GetProperties(${PROJECT_NAME})
-if(NOT ${PROJECT_NAME}_POPULATED)
-  FetchContent_Populate(${PROJECT_NAME})
-endif()
 
 message(VERBOSE "MUMPS ${MUMPS_UPSTREAM_VERSION} source directory: ${mumps_SOURCE_DIR}")
 
