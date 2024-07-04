@@ -52,7 +52,7 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "cl.exe",
         "CMAKE_Fortran_COMPILER": "ifx.exe",
-        "CMAKE_Fortran_FLAGS": "$env{CMAKE_Fortran_FLAGS} /nologo /4L132",
+        "CMAKE_Fortran_FLAGS": "$env{CMAKE_Fortran_FLAGS} /nologo /4I8 /4L132 /assume:byterecl,aligned_dummy_args,dummy_aliases,writeable_strings",
         "CMAKE_EXE_LINKER_FLAGS": "/NODEFAULTLIB:MSVCRT"
       },
       "vendor": {
