@@ -13,7 +13,9 @@ $<INSTALL_INTERFACE:include>
 )
 
 add_library(mpiseq $<TARGET_OBJECTS:mpiseq_C> $<TARGET_OBJECTS:mpiseq_FORTRAN>)
-
+if (WIN32 AND BUILD_SHARED_LIBS)
+    target_link_options(mpiseq PRIVATE /DEF:CMakeFiles/mpiseq.dir/./exports.def)
+endif()
 target_include_directories(mpiseq PUBLIC
 "$<BUILD_INTERFACE:${_l}>"
 $<INSTALL_INTERFACE:include>

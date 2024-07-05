@@ -32,7 +32,7 @@
         "BUILD_COMPLEX": true,
         "BUILD_COMPLEX16": true,
         "MUMPS_UPSTREAM_VERSION": "5.6.2",
-        "BUILD_SHARED_LIBS": "OFF",
+        "BUILD_SHARED_LIBS": "ON",
         "LAPACK_VENDOR": "MKL64",
         "MKL_DIR": "$env{LIBRARY_PREFIX}/lib",
         "intsize64": "ON",
@@ -46,14 +46,23 @@
     {
       "name": "msvc-ifx",
       "description": "MSVC with Intel Fortran",
+      "cmakeExecutable": "$env{LIBRARY_PREFIX}/bin/cmake.exe",
       "inherits": [
         "conda-shared"
       ],
+      "environment": {
+        "CC": "cl.exe",
+        "FC": "ifx.exe",
+        "CFLAGS": "/0d /Zi",
+        "FFLAGS": "/Od /debug /Zi",
+        "LDFLAGS": "$penv{LDFLAGS} /link /LIBPATH:$env{LIBRARY_PREFIX}/lib pthread.lib"
+      },
       "cacheVariables": {
         "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_C_FLAGS": "/nologo /MD",
         "CMAKE_Fortran_COMPILER": "ifx.exe",
+        "CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS": "ON",
         "CMAKE_Fortran_FLAGS": "$env{CMAKE_Fortran_FLAGS} /nologo /4I8 /4L132 /assume:byterecl,aligned_dummy_args,dummy_aliases,writeable_strings -DWORKAROUNDINTELILP64OPENMPLIMITATION",
-        "CMAKE_EXE_LINKER_FLAGS": "/NODEFAULTLIB:MSVCRT",
         "CMAKE_VERBOSE_MAKEFILE": "ON",
         "MUMPS_APPLY_PATCH_FILE": "OFF",
         "MUMPS_USE_CUSTOM_SOURCE_DIR": "OFF",
