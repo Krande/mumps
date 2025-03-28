@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19...3.30)
+cmake_minimum_required(VERSION 3.20...3.31)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
   message(FATAL_ERROR "Please use out of source build:
@@ -12,15 +12,20 @@ endif()
 
 project(MUMPS
 LANGUAGES C Fortran
-VERSION 5.7.2.0
+VERSION 5.7.3.2
 DESCRIPTION "Sparse direct parallel solver"
 HOMEPAGE_URL "http://mumps-solver.org/"
 )
 
+if(CMAKE_VERSION VERSION_GREATER 3.30.0 AND CMAKE_VERSION VERSION_LESS 3.30.4)
+cmake_policy(SET CMP0168 OLD)
+# workaround to stop repeat FetchContent download on each configure for CMake 3.30.0..3.30.3
+endif()
+
 enable_testing()
 
 if(NOT MUMPS_UPSTREAM_VERSION)
-  set(MUMPS_UPSTREAM_VERSION 5.7.2)
+  set(MUMPS_UPSTREAM_VERSION 5.7.3)
 endif()
 
 if(MSVC AND BUILD_SHARED_LIBS)
@@ -41,15 +46,15 @@ find_package(Threads)
 
 # -- Scalapack / MPI
 
-if(parallel)
+if(MUMPS_parallel)
   find_package(MPI COMPONENTS C Fortran REQUIRED)
-  if(NOT DEFINED ENV{MKLROOT} AND NOT LAPACK_VENDOR MATCHES "^MKL" OR NOT scalapack)
+  if(NOT DEFINED ENV{MKLROOT} AND NOT LAPACK_VENDOR MATCHES "^MKL" OR NOT MUMPS_scalapack)
     # oneMKL MKLConfig.cmake must be invoked only once
     include(cmake/lapack.cmake)
   endif()
   set(NUMERIC_LIBS LAPACK::LAPACK)
 
-  if(scalapack)
+  if(MUMPS_scalapack)
     include(cmake/scalapack.cmake) # this will also create the LAPACK::LAPACK target
     list(PREPEND NUMERIC_LIBS SCALAPACK::SCALAPACK)
   endif()
@@ -58,7 +63,7 @@ if(parallel)
   set(NUMERIC_INC ${MPI_Fortran_INCLUDE_DIRS})
   list(APPEND NUMERIC_LIBS ${MPI_Fortran_LIBRARIES} MPI::MPI_C)
 
-  if(openmp)
+  if(MUMPS_openmp)
     find_package(OpenMP COMPONENTS C Fortran REQUIRED)
     list(APPEND NUMERIC_LIBS OpenMP::OpenMP_Fortran OpenMP::OpenMP_C)
   endif()
@@ -66,7 +71,7 @@ else()
   include(cmake/lapack.cmake)
 endif()
 
-# GEMMT is recommeded in MUMPS User Manual if available
+# GEMMT is recommended in MUMPS User Manual if available
 if(gemmt)
   include(cmake/gemmt.cmake)
 endif()
@@ -99,7 +104,6 @@ ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindLAPACK.cmake
 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindSCALAPACK.cmake
 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindMETIS.cmake
 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindScotch.cmake
-${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindMUMPS.cmake
 DESTINATION cmake
 )
 
@@ -114,53 +118,13 @@ include(FetchContent)
 set(url "https://mumps-solver.org/MUMPS_${MUMPS_UPSTREAM_VERSION}.tar.gz")
 
 set(FETCHCONTENT_QUIET no)
-option(MUMPS_USE_CUSTOM_SOURCE_DIR "Use custom source directory" OFF)
-if (MUMPS_USE_CUSTOM_SOURCE_DIR)
- if (not DEFINED CUSTOM_SOURCE_DIR)
-   message(FATAL_ERROR "CUSTOM_SOURCE_DIR variable must be defined")
- endif ()
-  set(mumps_SOURCE_DIR ${CUSTOM_SOURCE_DIR})
-else ()
-  FetchContent_Populate(${PROJECT_NAME}
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/mumps/${MUMPS_UPSTREAM_VERSION}
-  URL ${url}
-  TLS_VERIFY ${CMAKE_TLS_VERIFY}
-  )
-endif ()
 
-message(VERBOSE "MUMPS ${MUMPS_UPSTREAM_VERSION} source directory: ${mumps_SOURCE_DIR}")
-
-# Apply patch file from var MUMPS_PATCH_FILE using a work directory MUMPS_PATCH_DIR
-option(MUMPS_APPLY_PATCH_FILE "Apply patch file" OFF)
-if(MUMPS_APPLY_PATCH_FILE )
-  if (NOT DEFINED MUMPS_PATCH_FILE)
-    message(FATAL_ERROR "Applying patch needs MUMPS_PATCH_FILE variable to be defined")
-  endif ()
-  if(DEFINED MUMPS_PATCH_DIR)
-    set(patch_dir ${MUMPS_PATCH_DIR})
-  else()
-    set(patch_dir ${mumps_SOURCE_DIR})
-  endif()
-  if(NOT Patch_EXECUTABLE)
-    message(FATAL_ERROR "Patch executable not found")
-  else ()
-    message(STATUS "Patch executable: ${Patch_EXECUTABLE}")
-  endif()
-  # check if the patch has already been applied
-  if(EXISTS ${patch_dir}/is_patched)
-      message(STATUS "Patch ${MUMPS_PATCH_FILE} has already been applied in $patch_dir")
-  else ()
-    message(STATUS "Applying patch ${MUMPS_PATCH_FILE} in $patch_dir")
-    execute_process(COMMAND ${Patch_EXECUTABLE} -p1 -i ${MUMPS_PATCH_FILE} WORKING_DIRECTORY ${patch_dir} COMMAND_ERROR_IS_FATAL ANY)
-    # add a file "is_patched" to the source directory to indicate that the patch has been applied
-    file(WRITE ${patch_dir}/is_patched "")
-  endif()
-endif()
+FetchContent_Populate(${PROJECT_NAME} URL ${url})
 
 # --- MUMPS build
 
 # --- mpiseq (No MPI)
-if(NOT parallel)
+if(NOT MUMPS_parallel)
   set(NUMERIC_LIBS LAPACK::LAPACK)
   include(cmake/libseq.cmake)
 endif()

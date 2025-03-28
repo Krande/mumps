@@ -2,8 +2,8 @@ if(NOT BUILD_DOUBLE)
   message(FATAL_ERROR "Matlab requires real64: `cmake -DBUILD_DOUBLE=true`")
 endif()
 
-if(parallel)
-  message(WARNING "MUMPS MEX assumes no MPI (cmake -Dparallel=no)")
+if(MUMPS_parallel)
+  message(WARNING "MUMPS MEX assumes no MPI (cmake -DMUMPS_parallel=no)")
 endif()
 
 set(mumps_matlab_path ${mumps_SOURCE_DIR}/MATLAB)
@@ -22,7 +22,11 @@ add_test(NAME matlabMEX
 COMMAND ${Matlab_MAIN_PROGRAM} -sd ${mumps_matlab_path}
 -batch "addpath('$<TARGET_FILE_DIR:dmumps>'), sparserhs_example"
 )
-set_property(TEST matlabMEX PROPERTY TIMEOUT 15)
+set_tests_properties(matlabMEX PROPERTIES
+TIMEOUT 90
+LABELS "matlab"
+PASS_REGULAR_EXPRESSION "SOLUTION OK"
+)
 # sometimes the example succeeds but hangs on cleanup
 
 endif()

@@ -31,19 +31,19 @@ For example, oneAPI / oneMPI work, but default system installs of OpenMPI / MPIC
 
 ## ScalaPACK
 
-ScalaPACK is only used for `parallel=on`.
+ScalaPACK is only used for `MUMPS_parallel=on`.
 ScalaPACK can be omitted with MUMPS &ge; 5.7.0 by option:
 
 ```sh
-cmake -Dscalapack=off
+cmake -DMUMPS_scalapack=off
 ```
 
 ## MPI
 
-For systems where MPI, BLACS and SCALAPACK are not available, or where non-parallel execution is suitable, the default parallel can be disabled at CMake configure time by option:
+For systems where MPI, BLACS and SCALAPACK are not available, or where non-parallel execution is suitable, the default `MUMPS_parallel=true` can be disabled at CMake configure time by option:
 
 ```sh
-cmake -Dparallel=false
+cmake -DMUMPS_parallel=false
 ```
 
 ## MUMPS version selection
@@ -58,19 +58,6 @@ cmake -B build -DMUMPS_UPSTREAM_VERSION=5.6.2
 The MUMPS_UPSTREAM_VERSION works for MUMPS versions in
 [cmake/libraries.json](./cmake/libraries.json).
 
-## Matlab
-
-Matlab MEX interface may be built:
-
-```sh
-cmake -Dmatlab=on
-```
-
-These require `-Dparallel=off`.
-These Matlab scripts seems to have been developed ~ 2006 and may not fully work anymore.
-Ask the MUMPS Users List if you need such scripts.
-We present them mainly as an example of compiling MEX libraries for Matlab with CMake.
-
 ## OpenMP
 
 OpenMP can make MUMPS slower in certain situations.
@@ -78,5 +65,9 @@ Try with and without OpenMP to see which is faster for your situation.
 Default is OpenMP OFF.
 
 ```sh
-cmake -Dopenmp=true
+cmake -DMUMPS_openmp=on
 ```
+
+---
+
+[Matlab](./Readme_matlab.md) can use MUMPS library as well.

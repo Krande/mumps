@@ -7,6 +7,8 @@ message(STATUS "ENV{CMAKE_BUILD_PARALLEL_LEVEL}: $ENV{CMAKE_BUILD_PARALLEL_LEVEL
 
 include(${CMAKE_CURRENT_LIST_DIR}/oneapi_check.cmake)
 
+find_package(MKL CONFIG REQUIRED)
+
 include(${CMAKE_CURRENT_LIST_DIR}/tempdir.cmake)
 
 get_temp_dir(tmpdir)
@@ -15,18 +17,18 @@ get_temp_dir(tmpdir)
 set(BUILD_SINGLE off)
 set(BUILD_DOUBLE on)
 
-foreach(parallel IN ITEMS true false)
+foreach(MUMPS_parallel IN ITEMS true false)
 
-set(bindir ${tmpdir}/parallel_${parallel})
+set(bindir ${tmpdir}/parallel_${MUMPS_parallel})
 
 set(prefix ${bindir}/install)
 
-message(STATUS "Testing MUMPS parallel=${parallel} in ${bindir}  prefix: ${prefix}")
+message(STATUS "Testing MUMPS_parallel=${MUMPS_parallel} in ${bindir}  prefix: ${prefix}")
 
 execute_process(
 COMMAND ${CMAKE_COMMAND} -B${bindir} -S${CMAKE_CURRENT_LIST_DIR}/..
   --install-prefix=${prefix}
-  -Dparallel=${parallel}
+  -DMUMPS_parallel=${MUMPS_parallel}
   -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
   -DCMAKE_Fortran_COMPILER:FILEPATH=${CMAKE_Fortran_COMPILER}
   -DBUILD_SINGLE:BOOL=${BUILD_SINGLE}
@@ -43,9 +45,9 @@ PATHS ${bindir}
 NO_DEFAULT_PATH
 )
 
-if(parallel)
+if(MUMPS_parallel)
   if(mpiseq)
-    message(FATAL_ERROR "mpiseq found in ${mpiseq}, but should not exist for parallel build")
+    message(FATAL_ERROR "mpiseq found in ${mpiseq}, but should not exist for MUMPS_parallel=true build")
   else()
    message(STATUS "mpiseq not found, as expected")
   endif()

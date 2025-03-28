@@ -1,7 +1,9 @@
 include(ExternalProject)
 include(GNUInstallDirs)
 
-if(find)
+if(find AND NOT TARGET SCALAPACK::SCALAPACK)
+
+# Make SCALAPACK_VENDOR match LAPACK_VENDOR
 
 if(NOT DEFINED SCALAPACK_VENDOR)
   if(LAPACK_VENDOR MATCHES "^MKL")
@@ -10,6 +12,16 @@ if(NOT DEFINED SCALAPACK_VENDOR)
     (DEFINED ENV{MKLROOT} AND IS_DIRECTORY "$ENV{MKLROOT}"))
     set(SCALAPACK_VENDOR MKL)
     set(LAPACK_VENDOR MKL)
+  endif()
+
+  if(LAPACK_VENDOR STREQUAL "AOCL")
+    set(SCALAPACK_VENDOR AOCL)
+  endif()
+endif()
+
+if(MKL IN_LIST SCALAPACK_VENDOR)
+  if(MUMPS_openmp)
+    list(APPEND SCALAPACK_VENDOR OpenMP)
   endif()
 endif()
 
@@ -27,8 +39,10 @@ find_package(SCALAPACK COMPONENTS ${SCALAPACK_VENDOR})
 
 endif()
 
-if(SCALAPACK_FOUND)
+if(SCALAPACK_FOUND OR TARGET SCALAPACK::SCALAPACK)
   return()
+elseif(DEFINED SCALAPACK_VENDOR)
+  message(FATAL_ERROR "Scalapack from ${SCALAPACK_VENDOR} not found.")
 endif()
 
 set(scalapack_cmake_args
@@ -42,7 +56,6 @@ set(scalapack_cmake_args
 -DCMAKE_Fortran_COMPILER:PATH=${CMAKE_Fortran_COMPILER}
 -DBUILD_TESTING:BOOL=off
 -DCMAKE_BUILD_TYPE:STRING=Release
--DCMAKE_TLS_VERIFY:BOOL=${CMAKE_TLS_VERIFY}
 )
 
 file(READ ${CMAKE_CURRENT_LIST_DIR}/libraries.json json)

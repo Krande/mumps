@@ -1,14 +1,16 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.20...3.24)
+# at least 3.24 to suppress CMP0135 warning
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
   message(FATAL_ERROR "please use out of source build
     cmake -Bbuild")
 endif()
 
-
 project(MumpsPrereqs LANGUAGES C Fortran)
 
 include(ExternalProject)
+
+get_filename_component(CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} ABSOLUTE)
 
 file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 message(STATUS "Installing MUMPS prerequisites to ${CMAKE_INSTALL_PREFIX}")
@@ -18,8 +20,6 @@ option(BUILD_DOUBLE "Build double precision real" ON)
 option(BUILD_COMPLEX "Build single precision complex")
 option(BUILD_COMPLEX16 "Build double precision complex")
 option(intsize64 "use 64-bit integers in C and Fortran--Scotch must be consistent with MUMPS")
-
-option(CMAKE_TLS_VERIFY "Verify TLS certificates when downloading" ON)
 
 set_property(DIRECTORY PROPERTY EP_UPDATE_DISCONNECTED true)
 
@@ -107,7 +107,7 @@ if(NOT bison)
 endif()
 
 message(STATUS "Bison found: ${bison}")
-get_filename_component(bison_root ${bison} DIRECTORY)
+cmake_path(GET bison PARENT_PATH bison_root)
 
 set(BISON_ROOT ${bison_root} PARENT_SCOPE)
 

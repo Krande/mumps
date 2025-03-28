@@ -1,9 +1,9 @@
-# LAPACK options
+# LAPACK / ScaLAPACK options
 
-The underlying "LAPACK" linear algebra interface is available from several vendors.
+The underlying "LAPACK" and ScaLAPACK linear algebra interfacs are available from several vendors.
 By default, the generic LAPACK library "lapack" is searched for.
 
-To specify a particular LAPACK library, use CMake configure variable "LAPACK_VENDOR" using one of the following vendors:
+To specify a particular LAPACK library, use CMake configure variable "LAPACK_VENDOR" and "SCALAPACK_VENDOR" using one of the following vendors:
 
 * AOCL  [AMD Optimizing CPU Libraries](https://www.amd.com/en/developer/aocl.html)
 * Atlas [Automatically Tuned Linear Algebra Software](http://math-atlas.sourceforge.net/)
@@ -17,6 +17,12 @@ For example, to use OpenBLAS:
 cmake -DLAPACK_VENDOR=OpenBLAS
 ```
 
+To use AMD AOCL:
+
+```sh
+cmake -DLAPACK_VENDOR=AOCL
+```
+
 Optionally, hint the location the LAPACK library like:
 
 ```sh
@@ -25,7 +31,7 @@ cmake -DLAPACK_ROOT=/path/to/lapack
 
 ## Intel MKL
 
-CMake searchs for Intel oneMKL if environment variables MKLROOT is set:
+CMake searches for Intel oneMKL if environment variables MKLROOT is set:
 
 * Base Toolkit: MKL LAPACK
 * HPC toolkit: SCALAPACK.

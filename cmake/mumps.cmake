@@ -137,7 +137,7 @@ foreach(t IN ITEMS mumps_common mumps_common_C mumps_common_Fortran)
 
   target_compile_definitions(${t} PRIVATE
   ${ORDERING_DEFS}
-  $<$<AND:$<COMPILE_LANGUAGE:Fortran>,$<NOT:$<BOOL:${scalapack}>>>:NOSCALAPACK>
+  $<$<AND:$<COMPILE_LANGUAGE:Fortran>,$<NOT:$<BOOL:${MUMPS_scalapack}>>>:NOSCALAPACK>
   )
 
   if(BLAS_HAVE_GEMMT)
@@ -238,7 +238,7 @@ foreach(t IN ITEMS ${a}mumps ${a}mumps_C ${a}mumps_Fortran)
   MUMPS_ARITH=MUMPS_ARITH_${a}
   ${ORDERING_DEFS}
   $<$<AND:$<BOOL:${BLAS_HAVE_${a}GEMMT}>,$<COMPILE_LANGUAGE:Fortran>>:GEMMT_AVAILABLE>
-  $<$<AND:$<COMPILE_LANGUAGE:Fortran>,$<NOT:$<BOOL:${scalapack}>>>:NOSCALAPACK>
+  $<$<AND:$<COMPILE_LANGUAGE:Fortran>,$<NOT:$<BOOL:${MUMPS_scalapack}>>>:NOSCALAPACK>
   )
   target_include_directories(${t} PUBLIC
   "$<BUILD_INTERFACE:${mumps_SOURCE_DIR}/include;${NUMERIC_INC}>"
@@ -280,7 +280,6 @@ install(FILES ${_mi}mumps_c_types.h ${_mi}mumps_compat.h TYPE INCLUDE)
 
 install(TARGETS MUMPS EXPORT ${PROJECT_NAME}-targets)
 
-# target for FetchContent
 # this must NOT be an ALIAS or linking in other packages breaks.
 add_library(MUMPS::MUMPS INTERFACE IMPORTED GLOBAL)
 target_link_libraries(MUMPS::MUMPS INTERFACE MUMPS)

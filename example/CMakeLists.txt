@@ -15,16 +15,21 @@ endif()
 find_package(MUMPS CONFIG REQUIRED)
 message(STATUS "MUMPS_DIR: ${MUMPS_DIR}")
 
+find_package(MPI COMPONENTS CXX REQUIRED)
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/launcher.cmake)
+
 function(precision_ex a lang)
 
   add_executable(${a}_example_${lang} ${a}_example.${lang})
-  target_link_libraries(${a}_example_${lang} PRIVATE MUMPS::MUMPS)
+  target_link_libraries(${a}_example_${lang} PRIVATE MUMPS::MUMPS
+  "$<$<BOOL:${MPI_CXX_FOUND}>:MPI::MPI_CXX>"
+  )
+
+  add_test(NAME ${a}_example_${lang} COMMAND ${a}_example_${lang})
 
   if(MUMPS_parallel)
-    add_test(NAME ${a}_example_${lang}
-      COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} 2 $<TARGET_FILE:${a}_example_${lang}>)
-  else()
-    add_test(NAME ${a}_example_${lang} COMMAND ${a}_example_${lang})
+    test_mpi_launcher(${a}_example_${lang} 2)
   endif()
 
 endfunction()
@@ -48,7 +53,7 @@ endif()
 if(WIN32)
   get_property(imp_mumps TARGET MUMPS::COMMON PROPERTY IMPORTED_LOCATION_RELEASE)
   if(imp_mumps)
-    get_filename_component(imp_mumps_dir ${imp_mumps} DIRECTORY)
+    cmake_path(GET imp_mumps PARENT_PATH imp_mumps_dir)
   endif()
   set_property(TEST ${test_names} PROPERTY
   ENVIRONMENT_MODIFICATION "PATH=path_list_prepend:${imp_mumps_dir};PATH=path_list_prepend:${CMAKE_PREFIX_PATH}/bin"
