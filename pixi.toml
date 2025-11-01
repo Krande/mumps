@@ -1,13 +1,14 @@
-[project]
+[workspace]
 name = "mumps-deps"
 description = "Dependencies for building and using the MUMPS sparse solver with CMake."
-channels=["https://repo.prefix.dev/code-aster", "conda-forge"]
+channels=["conda-forge", "https://repo.prefix.dev/code-aster"]
 platforms = ["win-64"]
 
 [dependencies]
 python = "3.12.*"
 metis = "*"
 mkl-devel = "*"
+ifx_win-64 = "*"
 libblas = { version = "==3.9.0", build = "*mkl*" }
 liblapack = { version = "==3.9.0", build = "*mkl*" }
 ninja = "*"
@@ -22,4 +23,4 @@ build = { cmd="cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release"}
 
 
 [target.win-64.activation]
-scripts = ["conda/activate.bat", "conda/activate_intel.bat"]
+scripts = ["conda/activate.bat"]
